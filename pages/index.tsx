@@ -1,3 +1,5 @@
+import Student from "@/components/Student";
+import University from "@/components/University";
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
@@ -38,6 +40,11 @@ const Home: NextPage = () => {
                             )}`}
                         </button>
                     </div>
+                    {process.env.NEXT_PUBLIC_UNI_ADDRESS === address ? (
+                        <University />
+                    ) : (
+                        <Student />
+                    )}
                 </>
             ) : (
                 <>
