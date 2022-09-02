@@ -2,6 +2,8 @@ import { SyntheticEvent, useState } from "react";
 import { useContract, useSigner, useSignTypedData } from "wagmi";
 import contractAbi from "@/contracts/VillvayCerts.json";
 import { domain, types } from "./eip";
+import Spinner from "../Spinner";
+import Response from "../Response";
 
 type Certificate = {
     studentAddress: string;
@@ -18,6 +20,8 @@ const University = () => {
         contractInterface: contractAbi.abi,
         signerOrProvider: signer,
     });
+    const [resultText, setResultText] = useState<string>("");
+    const [resultOpen, setResultOpen] = useState<boolean>(false);
     const [formData, setFormData] = useState<Certificate>({
         studentAddress: "",
         name: "",
@@ -36,7 +40,7 @@ const University = () => {
         await grantCertificate();
     };
     const grantCertificate = async () => {
-        try{
+        try {
             const tx = await contract.grantCertificate(
                 formData.studentAddress,
                 formData,
@@ -45,16 +49,18 @@ const University = () => {
             setIsLoading(true);
             await tx.wait();
             setIsLoading(false);
-            alert(`certificate granted`);
+            setResultOpen(true);
+            setResultText("Certificate Granted!");
             setFormData({
                 studentAddress: "",
                 name: "",
                 qualification: "",
                 major: "",
             });
-        }
-        catch{
-            setIsLoading(false)
+        } catch {
+            setIsLoading(false);
+            setResultOpen(true);
+            setResultText("An Error Occurred, Please Try Again Later");
         }
     };
 
@@ -119,6 +125,12 @@ const University = () => {
                     </p>
                 </div>
             </form>
+            <Spinner isOpen={isLoading} setIsOpen={setIsLoading} />
+            <Response
+                isOpen={resultOpen}
+                setIsOpen={setResultOpen}
+                text={resultText}
+            />
         </>
     );
 };

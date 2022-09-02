@@ -2,6 +2,7 @@ import { SyntheticEvent, useState } from "react";
 import { useAccount, useContract, useSigner, useSignTypedData } from "wagmi";
 import contractAbi from "@/contracts/VillvayCerts.json";
 import Spinner from "../Spinner";
+import Response from "../Response";
 
 type Certificate = {
     studentAddress: string;
@@ -15,6 +16,8 @@ const Student = () => {
     const { address } = useAccount();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [signature, setSignature] = useState<string>("");
+    const [resultText, setResultText] = useState<string>("");
+    const [resultOpen, setResultOpen] = useState<boolean>(false);
     const contract = useContract({
         addressOrName: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as string,
         contractInterface: contractAbi.abi,
@@ -36,7 +39,13 @@ const Student = () => {
             gasLimit: 500000,
         });
         setIsLoading(false);
-        alert(tx);
+        if (tx === true) {
+            setResultOpen(true);
+            setResultText("Verified!");
+        } else {
+            setResultOpen(true);
+            setResultText("Could Not Verify Your Certificate!");
+        }
     };
 
     const handleChange = (e: any) => {
@@ -104,6 +113,11 @@ const Student = () => {
                 </div>
             </form>
             <Spinner isOpen={isLoading} setIsOpen={setIsLoading} />
+            <Response
+                isOpen={resultOpen}
+                setIsOpen={setResultOpen}
+                text={resultText}
+            />
         </>
     );
 };
