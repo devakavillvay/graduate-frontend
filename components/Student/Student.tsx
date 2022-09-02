@@ -31,9 +31,11 @@ const Student = () => {
         e.preventDefault();
         console.log("in grant");
         console.log(formData);
+        setIsLoading(true);
         const tx = await contract.verifyCert(formData, signature, {
             gasLimit: 500000,
         });
+        setIsLoading(false);
         alert(tx);
     };
 
@@ -42,8 +44,6 @@ const Student = () => {
             return { ...prev, [e.target.name]: e.target.value };
         });
     };
-
-    console.log(formData);
 
     return (
         <>
@@ -103,6 +103,7 @@ const Student = () => {
                     </button>
                 </div>
             </form>
+            <Spinner isOpen={isLoading} setIsOpen={setIsLoading} />
         </>
     );
 };
