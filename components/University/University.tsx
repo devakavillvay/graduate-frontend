@@ -36,23 +36,26 @@ const University = () => {
         await grantCertificate();
     };
     const grantCertificate = async () => {
-        console.log("in grant");
-        console.log(formData);
-        const tx = await contract.grantCertificate(
-            formData.studentAddress,
-            formData,
-            { gasLimit: 500000 }
-        );
-        setIsLoading(true);
-        await tx.wait();
-        setIsLoading(false);
-        alert(`certificate granted`);
-        setFormData({
-            studentAddress: "",
-            name: "",
-            qualification: "",
-            major: "",
-        });
+        try{
+            const tx = await contract.grantCertificate(
+                formData.studentAddress,
+                formData,
+                { gasLimit: 500000 }
+            );
+            setIsLoading(true);
+            await tx.wait();
+            setIsLoading(false);
+            alert(`certificate granted`);
+            setFormData({
+                studentAddress: "",
+                name: "",
+                qualification: "",
+                major: "",
+            });
+        }
+        catch{
+            setIsLoading(false)
+        }
     };
 
     const handleChange = (e: any) => {

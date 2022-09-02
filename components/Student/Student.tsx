@@ -20,7 +20,7 @@ const Student = () => {
         signerOrProvider: signer,
     });
     const [formData, setFormData] = useState<Certificate>({
-        studentAddress: address as string,
+        studentAddress: "",
         name: "",
         qualification: "",
         major: "",
@@ -59,6 +59,7 @@ const Student = () => {
                         placeholder="Student Address"
                         name="studentAddress"
                         value={formData.studentAddress}
+                        onChange={handleChange}
                         className="text-center font-semibold text-lg mt-5 w-2/3 h-10 rounded bg-gray-700 text-indigo-200"
                     />
                     <input
