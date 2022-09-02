@@ -1,6 +1,7 @@
 import { SyntheticEvent, useState } from "react";
 import { useAccount, useContract, useSigner, useSignTypedData } from "wagmi";
 import contractAbi from "@/contracts/VillvayCerts.json";
+import Spinner from "../Spinner";
 
 type Certificate = {
     studentAddress: string;
