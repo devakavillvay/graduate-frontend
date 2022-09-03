@@ -32,6 +32,7 @@ export default function handler(
                     }`
                 )
             );
+            formData.append("pinataOptions", '{"cidVersion": 1}');
             const result = await pinataApi.post("pinFileToIPFS", formData);
             fs.unlinkSync(
                 `./public/${
