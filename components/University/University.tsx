@@ -4,6 +4,7 @@ import contractAbi from "@/contracts/VillvayCerts.json";
 import { domain, types } from "./eip";
 import Spinner from "../Spinner";
 import Response from "../Response";
+import axios from "axios";
 
 type Certificate = {
     studentAddress: string;
@@ -21,6 +22,7 @@ const University = () => {
         signerOrProvider: signer,
     });
     const [resultText, setResultText] = useState<string>("");
+    const [ipfsHash, setIpfsHash] = useState<string>("");
     const [resultOpen, setResultOpen] = useState<boolean>(false);
     const [formData, setFormData] = useState<Certificate>({
         studentAddress: "",
@@ -70,8 +72,13 @@ const University = () => {
         });
     };
 
-    console.log(formData);
-
+    const handleImageUpload = async (e: any) => {
+        const body = new FormData();
+        body.append("file", e.target.files[0]);
+        const response = await axios.post("/api/ipfs-pin", body);
+        console.log(response);
+        setIpfsHash(response.data.IpfsHash);
+    };
     return (
         <>
             <h2 className="text-gray-800 text-center mt-10 font-extrabold text-3xl">
@@ -114,6 +121,13 @@ const University = () => {
                         onChange={handleChange}
                         className="text-center font-semibold text-lg mt-5 w-2/3 h-10 rounded bg-gray-700 text-indigo-200"
                     />
+                    <label htmlFor="imageUpload" className="mt-5"></label>
+                    <input
+                        onChange={handleImageUpload}
+                        type="file"
+                        id="imageUpload"
+                        className="text-sm text-grey-500 file:mr-5 file:py-2 file:px-6 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-gray-50 file:text-gray-700 hover:file:cursor-pointer hover:file:bg-indigo-50 hover:file:text-indigo-700"
+                    />
                     <button
                         type="submit"
                         className="mt-5 bg-gray-700 text-indigo-200 rounded px-10 py-1 text-lg font-semibold"
@@ -122,6 +136,9 @@ const University = () => {
                     </button>
                     <p className="mt-10 text-center break-words w-2/3 font-semibold">
                         Signature : {signature}
+                    </p>
+                    <p className="mt-5 text-center break-words w-2/3 font-semibold">
+                        IPFS Link : {ipfsHash}
                     </p>
                 </div>
             </form>
