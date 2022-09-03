@@ -42,8 +42,8 @@ export default function handler(
             fs.unlinkSync(files.file.filepath);
             res.status(200).json(result.data);
         });
-        console.log("hello");
     }
+    res.status(405).json("method not allowed");
 }
 
 export const config = {
