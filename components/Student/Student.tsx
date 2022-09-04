@@ -9,6 +9,7 @@ type Certificate = {
     name: string;
     qualification: string;
     major: string;
+    ipfsHash: string;
 };
 
 const Student = () => {
@@ -28,6 +29,7 @@ const Student = () => {
         name: "",
         qualification: "",
         major: "",
+        ipfsHash: "",
     });
 
     const handleSubmit = async (e: SyntheticEvent) => {
@@ -54,6 +56,25 @@ const Student = () => {
         });
     };
 
+    const getCertificate = async () => {
+        const tx = await contract.getCertificateByStudent(
+            formData.studentAddress
+        );
+        if (
+            tx.studentAddress === "0x0000000000000000000000000000000000000000"
+        ) {
+            setResultOpen(true);
+            setResultText("This Student Does Not Have A Certificate");
+        }
+        setFormData({
+            ipfsHash: tx.ipfsHash,
+            major: tx.major,
+            name: tx.name,
+            qualification: tx.qualification,
+            studentAddress: tx.studentAddress,
+        });
+    };
+
     return (
         <>
             <h2 className="text-gray-800 text-center mt-10 font-extrabold text-3xl">
@@ -64,14 +85,23 @@ const Student = () => {
             </h2>
             <form onSubmit={handleSubmit}>
                 <div className="grid place-items-center">
-                    <input
-                        required
-                        placeholder="Student Address"
-                        name="studentAddress"
-                        value={formData.studentAddress}
-                        onChange={handleChange}
-                        className="text-center font-semibold text-lg mt-5 w-2/3 h-10 rounded bg-gray-700 text-indigo-200"
-                    />
+                    <div className="flex w-2/3 items-center justify-between">
+                        <input
+                            required
+                            placeholder="Student Address"
+                            name="studentAddress"
+                            value={formData.studentAddress}
+                            onChange={handleChange}
+                            className="text-center font-semibold text-lg mt-5 w-8/12 h-10 rounded bg-gray-700 text-indigo-200"
+                        />
+                        <button
+                            onClick={getCertificate}
+                            type="button"
+                            className="w-3/12 mt-5 bg-gray-700 text-indigo-200 rounded px-5 py-1 text-lg font-semibold"
+                        >
+                            Retrieve Certificate
+                        </button>
+                    </div>
                     <input
                         required
                         placeholder="Name"
@@ -93,6 +123,14 @@ const Student = () => {
                         placeholder="Major"
                         name="major"
                         value={formData.major}
+                        onChange={handleChange}
+                        className="text-center font-semibold text-lg mt-5 w-2/3 h-10 rounded bg-gray-700 text-indigo-200"
+                    />
+                    <input
+                        required
+                        placeholder="IPFS Hash"
+                        name="ipfsHash"
+                        value={formData.ipfsHash}
                         onChange={handleChange}
                         className="text-center font-semibold text-lg mt-5 w-2/3 h-10 rounded bg-gray-700 text-indigo-200"
                     />
