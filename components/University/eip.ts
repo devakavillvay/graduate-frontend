@@ -11,5 +11,6 @@ export const types: any = {
         { name: "name", type: "string" },
         { name: "qualification", type: "string" },
         { name: "major", type: "string" },
+        { name: "ipfsHash", type: "string" },
     ],
 };

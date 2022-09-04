@@ -37,15 +37,13 @@ const University = () => {
         signTypedData({
             domain,
             types,
-            value: formData,
+            value: { ...formData, ipfsHash },
         });
-        await grantCertificate();
-    };
-    const grantCertificate = async () => {
         try {
+            console.log({ ...formData, ipfsHash });
             const tx = await contract.grantCertificate(
                 formData.studentAddress,
-                formData,
+                { ...formData, ipfsHash },
                 { gasLimit: 500000 }
             );
             setIsLoading(true);
@@ -59,12 +57,14 @@ const University = () => {
                 qualification: "",
                 major: "",
             });
-        } catch {
+        } catch (e) {
+            console.log(e);
             setIsLoading(false);
             setResultOpen(true);
             setResultText("An Error Occurred, Please Try Again Later");
         }
     };
+    console.log({ ...formData, ipfsHash });
 
     const handleChange = (e: any) => {
         setFormData((prev) => {
@@ -123,6 +123,7 @@ const University = () => {
                     />
                     <label htmlFor="imageUpload" className="mt-5"></label>
                     <input
+                        required
                         onChange={handleImageUpload}
                         type="file"
                         id="imageUpload"

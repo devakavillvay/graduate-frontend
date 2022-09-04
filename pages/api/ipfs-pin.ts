@@ -33,7 +33,7 @@ export default function handler(
                 )
             );
             formData.append("pinataOptions", '{"cidVersion": 1}');
-            const result = await pinataApi.post("pinFileToIPFS", formData);
+            const result = await pinataApi.post("/pinFileToIPFS", formData);
             fs.unlinkSync(
                 `./public/${
                     files.file.newFilename + files.file.originalFilename
@@ -42,8 +42,9 @@ export default function handler(
             fs.unlinkSync(files.file.filepath);
             res.status(200).json(result.data);
         });
+    } else {
+        res.status(405).json("method not allowed");
     }
-    res.status(405).json("method not allowed");
 }
 
 export const config = {
