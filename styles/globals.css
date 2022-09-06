@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+html{
+  overflow-y: scroll !important;
+}
 body {
   display: grid;
   place-items: center;

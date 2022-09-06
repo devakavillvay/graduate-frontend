@@ -5,6 +5,7 @@ import { domain, types } from "./eip";
 import Spinner from "../Spinner";
 import Response from "../Response";
 import axios from "axios";
+import Image from "next/image";
 
 type Certificate = {
     studentAddress: string;
@@ -21,9 +22,11 @@ const University = () => {
         contractInterface: contractAbi.abi,
         signerOrProvider: signer,
     });
+    const [imagePreviewUrl, setImagePreviewUrl] = useState<string>("");
     const [resultText, setResultText] = useState<string>("");
     const [ipfsHash, setIpfsHash] = useState<string>("");
     const [resultOpen, setResultOpen] = useState<boolean>(false);
+    const [imageFormData, setImageFormData] = useState<FormData>();
     const [formData, setFormData] = useState<Certificate>({
         studentAddress: "",
         name: "",
@@ -34,16 +37,19 @@ const University = () => {
 
     const handleSubmit = async (e: SyntheticEvent) => {
         e.preventDefault();
+        setIsLoading(true);
+        const response = await axios.post("/api/ipfs-pin", imageFormData);
+        setIsLoading(false);
+        setIpfsHash(response.data.IpfsHash);
         signTypedData({
             domain,
             types,
-            value: { ...formData, ipfsHash },
+            value: { ...formData, ipfsHash: response.data.IpfsHash },
         });
         try {
-            console.log({ ...formData, ipfsHash });
             const tx = await contract.grantCertificate(
                 formData.studentAddress,
-                { ...formData, ipfsHash },
+                { ...formData, ipfsHash: response.data.IpfsHash },
                 { gasLimit: 500000 }
             );
             setIsLoading(true);
@@ -64,7 +70,6 @@ const University = () => {
             setResultText("An Error Occurred, Please Try Again Later");
         }
     };
-    console.log({ ...formData, ipfsHash });
 
     const handleChange = (e: any) => {
         setFormData((prev) => {
@@ -73,11 +78,12 @@ const University = () => {
     };
 
     const handleImageUpload = async (e: any) => {
-        const body = new FormData();
-        body.append("file", e.target.files[0]);
-        const response = await axios.post("/api/ipfs-pin", body);
-        console.log(response);
-        setIpfsHash(response.data.IpfsHash);
+        if (e.target.files.length > 0) {
+            const body = new FormData();
+            body.append("file", e.target.files[0]);
+            setImageFormData(body);
+            setImagePreviewUrl(URL.createObjectURL(e.target.files[0]));
+        }
     };
     return (
         <>
@@ -87,7 +93,7 @@ const University = () => {
             <h2 className="text-gray-800 text-center mt-10 mb-5 text-3xl">
                 Grant A Certificate
             </h2>
-            <form onSubmit={handleSubmit}>
+            <form className="w-full" onSubmit={handleSubmit}>
                 <div className="grid place-items-center">
                     <input
                         required
@@ -143,6 +149,17 @@ const University = () => {
                     </p>
                 </div>
             </form>
+            <div className="flex justify-center">
+                {imagePreviewUrl && (
+                    <Image
+                        src={imagePreviewUrl as string}
+                        alt=""
+                        width={300}
+                        height={300}
+                        objectFit="contain"
+                    />
+                )}
+            </div>
             <Spinner isOpen={isLoading} setIsOpen={setIsLoading} />
             <Response
                 isOpen={resultOpen}

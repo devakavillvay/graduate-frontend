@@ -19,7 +19,9 @@ export default function handler(
             const data = fs.readFileSync(files.file.filepath);
             fs.writeFileSync(
                 `./public/${
-                    files.file.newFilename + files.file.originalFilename
+                    files.file.newFilename +
+                    "." +
+                    files.file.originalFilename.split(".").slice(-1)
                 }`,
                 data
             );
@@ -28,7 +30,9 @@ export default function handler(
                 "file",
                 fs.createReadStream(
                     `./public/${
-                        files.file.newFilename + files.file.originalFilename
+                        files.file.newFilename +
+                        "." +
+                        files.file.originalFilename.split(".").slice(-1)
                     }`
                 )
             );
@@ -36,7 +40,9 @@ export default function handler(
             const result = await pinataApi.post("/pinFileToIPFS", formData);
             fs.unlinkSync(
                 `./public/${
-                    files.file.newFilename + files.file.originalFilename
+                    files.file.newFilename +
+                    "." +
+                    files.file.originalFilename.split(".").slice(-1)
                 }`
             );
             fs.unlinkSync(files.file.filepath);

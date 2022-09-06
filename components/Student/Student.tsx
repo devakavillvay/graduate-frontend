@@ -3,6 +3,7 @@ import { useAccount, useContract, useSigner, useSignTypedData } from "wagmi";
 import contractAbi from "@/contracts/VillvayCerts.json";
 import Spinner from "../Spinner";
 import Response from "../Response";
+import Image from "next/image";
 
 type Certificate = {
     studentAddress: string;
@@ -18,6 +19,7 @@ const Student = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [signature, setSignature] = useState<string>("");
     const [resultText, setResultText] = useState<string>("");
+    const [verified, setVerified] = useState<boolean>(false);
     const [resultOpen, setResultOpen] = useState<boolean>(false);
     const contract = useContract({
         addressOrName: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as string,
@@ -44,6 +46,7 @@ const Student = () => {
         if (tx === true) {
             setResultOpen(true);
             setResultText("Verified!");
+            setVerified(true);
         } else {
             setResultOpen(true);
             setResultText("Could Not Verify Your Certificate!");
@@ -65,14 +68,15 @@ const Student = () => {
         ) {
             setResultOpen(true);
             setResultText("This Student Does Not Have A Certificate");
+        } else {
+            setFormData({
+                ipfsHash: tx.ipfsHash,
+                major: tx.major,
+                name: tx.name,
+                qualification: tx.qualification,
+                studentAddress: tx.studentAddress,
+            });
         }
-        setFormData({
-            ipfsHash: tx.ipfsHash,
-            major: tx.major,
-            name: tx.name,
-            qualification: tx.qualification,
-            studentAddress: tx.studentAddress,
-        });
     };
 
     return (
@@ -150,6 +154,17 @@ const Student = () => {
                     </button>
                 </div>
             </form>
+            <div className="flex justify-center">
+                {verified && formData.ipfsHash && (
+                    <Image
+                        src={`${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${formData.ipfsHash}`}
+                        alt=""
+                        width={300}
+                        height={300}
+                        objectFit="contain"
+                    />
+                )}
+            </div>
             <Spinner isOpen={isLoading} setIsOpen={setIsLoading} />
             <Response
                 isOpen={resultOpen}
